@@ -1,0 +1,16 @@
+STORAGEACCOUNTNAME='storageaccountbashrg'
+RESOURCEGROUPNAME='bash-rg'
+KVNAME='keyvaultvbashrg'
+NSGNAME="nsgbashrg"
+VNETNAME=vnetbashrg
+SUBNET1="subnetbashrg"
+
+#STORAGECONNSTRING="$(az storage account create --name ${STORAGEACCOUNTNAME} --resource-group ${RESOURCEGROUPNAME} --access-tier Hot --kind StorageV2 --location eastus --sku Standard_LRS --output tsv --query [primaryEndpoints.blob])"
+#echo $STORAGECONNSTRING
+#az keyvault create --resource-group ${RESOURCEGROUPNAME} --location eastus --name ${KVNAME} --sku standard --tags Env=DEV RG=BASHRG
+#az keyvault secret set --name storageconnectionstring --vault-name ${KVNAME} --value ${STORAGECONNSTRING}
+
+NSGID="$(az network nsg create --location eastus --name ${NSGNAME} --resource-group ${RESOURCEGROUPNAME} --output tsv --query NewNSG.id)"
+az keyvault secret set --name nsgnid --vault-name ${KVNAME} --value "${NSGID}"
+VNETID="$(az network vnet create --address-prefixes "10.1.0.0/22" --location eastus --name ${VNETNAME} --nsg $NSGID --subnet-name ${SUBNET1} --subnet-prefixes 10.1.1.0/24 --resource-group ${RESOURCEGROUPNAME} --output tsv --query newVNet.id)"
+az keyvault secret set --name vnetid --vault-name ${KVNAME} --value "${VNETID}"
