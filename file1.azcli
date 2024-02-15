@@ -1,0 +1,12 @@
+az account show --output table
+az account show --query name # Querying a single value
+az account show --query name -o tsv # Removes quotation marks from the output
+az account show --query user.name # Querying a nested value
+az account show --query user.name -o tsv # Removes quotation marks from the output
+az account list --query "[].{subscription_id:id, TenantId:homeTenantId, name:name, Env:state}"
+az account show --query ['name','state','user.name']
+az account show -h
+subname="devops"
+az account list --query "[? contains(name, '$subname' )].id"
+subscriptionId="$(az account list --query "[? contains(name, '$subname')].id" -o tsv)" # Captures the subscription id as a variable. 
+az account set -s $subscriptionId # Sets the current active subscription
